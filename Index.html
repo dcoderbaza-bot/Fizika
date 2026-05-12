@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yakuniy Nazorat - Fizika</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .asosiy-oyna {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        h2 { text-align: center; color: #333; }
+        .yashirin { display: none !important; }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #0056b3; }
+        .savol-matni { font-size: 18px; margin-bottom: 20px; color: #222; }
+        .javob-varianti {
+            display: block;
+            background: #e9ecef;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .javob-varianti:hover { background: #d3d9df; }
+        .ishora-qismi {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .natija-matni { font-size: 20px; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="asosiy-oyna">
+    <div id="kirish-oynasi">
+        <h2>Fizika fani bo'yicha yakuniy nazorat</h2>
+        <label>Ismingizni kiriting:</label>
+        <input type="text" id="foydalanuvchi-ismi" placeholder="Masalan: Asadbek">
+        
+        <label>Test rejimini tanlang:</label>
+        <select id="test-rejimi">
+            <option value="aralash">Aralash tartibda (Barcha mavzular)</option>
+            <option value="Elektromagnit induksiya">Elektromagnit induksiya</option>
+            <option value="Elektromagnit tebranishlar">Elektromagnit tebranishlar</option>
+            <option value="To'lqin hodisalar">To'lqin hodisalar</option>
+            <option value="To'lqinlar superpozitsiyasi">To'lqinlar superpozitsiyasi</option>
+            <option value="Elektromagnit to'lqinlar">Elektromagnit to'lqinlar</option>
+            <option value="Yorug'lik nurlari">Yorug'lik nurlari</option>
+            <option value="Yorug'lik difraksiyasi">Yorug'lik difraksiyasi</option>
+            <option value="Atomlarning chiziqli spektri">Atomlarning chiziqli spektri</option>
+            <option value="Atom va yadro fizikasi">Atom va yadro fizikasi</option>
+        </select>
+        
+        <button onclick="testniBoshlash()">Testni boshlash</button>
+    </div>
+
+    <div id="test-oynasi" class="yashirin">
+        <h3 id="salomlashish"></h3>
+        <p>Savol <span id="joriy-savol-raqami">1</span> / <span id="jami-savollar"></span></p>
+        <div id="mavzu-nomi" style="font-size: 12px; color: gray; margin-bottom: 10px;"></div>
+        
+        <div class="savol-matni" id="savol-matni"></div>
+        <div id="javoblar-qismi"></div>
+        
+        <button onclick="ishoraniKorsatish()" id="ishora-tugmasi">Yordamchi ishorani ko'rish</button>
+        <div id="ishora-matni" class="ishora-qismi yashirin"></div>
+        
+        <button onclick="keyingiSavol()" id="keyingi-tugmasi" class="yashirin">Keyingi savol</button>
+    </div>
+
+    <div id="natija-oynasi" class="yashirin">
+        <h2>Test yakunlandi!</h2>
+        <div class="natija-matni" id="yakuniy-natija"></div>
+        <button onclick="location.reload()">Qaytadan urinib ko'rish</button>
+    </div>
+</div>
+
+<script>
+    // Barcha savollar bazasi
+    const barchaSavollar = [
+        // 1. Atomlarning chiziqli spektri
+        {
+            mavzu: "Atomlarning chiziqli spektri",
+            savol: "J. Tomsonning 1903-yilda taklif qilgan atom modeliga ko'ra, atom qanday tuzilishga ega?",
+            javoblar: [
+                "Butun hajmi musbat zaryadlangan shardan iborat bo'lib, ichida elektronlar suzib yuradi",
+                "Markazda musbat yadro va uning atrofida elektronlar aylanadi",
+                "Atom bo'linmas yagona musbat zaryadli zarradir",
+                "Atom faqat manfiy zaryadli elektronlardan iborat"
+            ],
+            togriJavob: 0,
+            ishora: "Tomson modelida elektronlar musbat elektr «buluti»da go'yo suzib yuradi deb qaralgan (keks ichidagi mayiz kabi)."
+        },
+        {
+            mavzu: "Atomlarning chiziqli spektri",
+            savol: "Mendeleyev elementlarning davriy sistemasini kashf qilgach, elementlarning individual xossalarining tashuvchilari nima ekanligini ta'kidlagan?",
+            javoblar: [
+                "Kvarklar",
+                "Elektronlar",
+                "Atomlar",
+                "Protonlar"
+            ],
+            togriJavob: 2,
+            ishora: "Mendeleyev birinchi bo'lib elementlarning individual xossalarining tashuvchilari atomlar ekanligini hisoblab chiqqan."
+        },
+
+        // 2. Atom va yadro fizikasi
+        {
+            mavzu: "Atom va yadro fizikasi",
+            savol: "Protonning massasi elektron massasidan necha marta katta va uning spini qanchaga teng?",
+            javoblar: [
+                "1836 marta katta, spini 0 ga teng",
+                "1836 marta katta, spini 1/2 ga teng",
+                "2000 marta katta, spini 1 ga teng",
+                "1840 marta katta, spini 1/2 ga teng"
+            ],
+            togriJavob: 1,
+            ishora: "Proton massasi elektron massasidan aniq 1836 marta katta va u yarim spinga ega."
+        },
+        {
+            mavzu: "Atom va yadro fizikasi",
+            savol: "Atom massasini o'lchashda qaysi element atomining 1/12 massasi massaning atom birligi sifatida qabul qilingan?",
+            javoblar: [
+                "Vodorod (1/1 H)",
+                "Kislorod (16/8 O)",
+                "Uglerod (12/6 C)",
+                "Azot (14/7 N)"
+            ],
+            togriJavob: 2,
+            ishora: "Uglerod izotopi (12/6 C) atomining 1/12 qismi qulaylik uchun o'lchov birligi etib belgilangan."
+        },
+
+        // 3. Elektromagnit induksiya
+        {
+            mavzu: "Elektromagnit induksiya",
+            savol: "Berk kontur orqali o'tayotgan magnit oqimining vaqt bo'yicha o'zgarishi natijasida konturda elektr toki hosil bo'lish hodisasi nima deb ataladi?",
+            javoblar: [
+                "Elektromagnit induksiya",
+                "O'zinduksiya",
+                "Magnitlanish rezonansi",
+                "Elektr qutblanish"
+            ],
+            togriJavob: 0,
+            ishora: "1831-yilda Maykl Faradey tomonidan kashf etilgan ushbu hodisa o'zgaruvchan magnit maydonining elektr toki hosil qilishiga asoslangan."
+        },
+        {
+            mavzu: "Elektromagnit induksiya",
+            savol: "Lents qoidasiga ko'ra, yopiq konturda hosil bo'lgan induksion tok qanday yo'nalishga ega bo'ladi?",
+            javoblar: [
+                "O'zini yuzaga keltiruvchi sababga qarshilik ko'rsatadigan yo'nalishda",
+                "Tashqi magnit maydon yo'nalishi bilan doimo bir xil yo'nalishda",
+                "Elektr maydon kuchlanganligi vektoriga doimo perpendikulyar",
+                "Faqat soat mili yo'nalishida"
+            ],
+            togriJavob: 0,
+            ishora: "Tabiatdagi inersiya qonuniga o'xshab, bu tok o'zini vujudga keltirgan tashqi ta'sirga 'qarshilik' qiladi."
+        },
+
+        // 4. Elektromagnit tebranishlar
+        {
+            mavzu: "Elektromagnit tebranishlar",
+            savol: "Tebranish konturining xususiy chastotasi qanday formula yordamida aniqlanadi (Tomson formulasi)?",
+            javoblar: [
+                "1 / √(LC)",
+                "√(L / C)",
+                "L × C",
+                "1 / (L + C)"
+            ],
+            togriJavob: 0,
+            ishora: "Bu chastota g'altak induktivligi (L) va kondensator sig'imi (C) ko'paytmasining ildizidan olingan teskari qiymatga teng."
+        },
+        {
+            mavzu: "Elektromagnit tebranishlar",
+            savol: "Tebranish konturini yaratish uchun elektr zanjiriga qaysi asosiy elementlar ketma-ket ulanadi?",
+            javoblar: [
+                "Induktiv g'altak va kondensator",
+                "Rezistor va tranzistor",
+                "Transformator va diod",
+                "Akkumulyator va reostat"
+            ],
+            togriJavob: 0,
+            ishora: "Maydon energiyalari almashinishi uchun elektr maydonini yig'uvchi va magnit maydonini saqlovchi asboblar kerak."
+        },
+
+        // 5. To'lqin hodisalar
+        {
+            mavzu: "To'lqin hodisalar",
+            savol: "To'lqin tarqalayotgan yo'nalishga perpendikulyar joylashgan birlik yuza orqali vaqt birligida o'tuvchi energiya nima deb ataladi?",
+            javoblar: [
+                "Energiya oqimi zichligi",
+                "To'lqin quvvati",
+                "To'lqin amplitudasi",
+                "Energiyaning yutilish koeffitsiyenti"
+            ],
+            togriJavob: 0,
+            ishora: "Ushbu kattalik vektor ko'rinishida bo'lib, uning yo'nalishi energiya ko'chayotgan yo'nalish bilan ustma-ust tushadi."
+        },
+
+        // 6. To'lqinlar superpozitsiyasi
+        {
+            mavzu: "To'lqinlar superpozitsiyasi",
+            savol: "Kuchli ultratovushlar suyuqlik ichida qanday hodisani yuzaga keltirib, qattiq jismlarni parchalash xususiyatiga ega bo'ladi?",
+            javoblar: [
+                "Kavitatsiya hodisasini",
+                "Yorug'lik dispersiyasini",
+                "To'la ichki qaytishni",
+                "Magnitostriksiya hodisasini"
+            ],
+            togriJavob: 0,
+            ishora: "Katta bosim amplitudasi tufayli suyuqlikda mayda pufakchalar hosil bo'ladi va ular portlab, kuchli zarba to'lqinlarini tarqatadi."
+        },
+
+        // 7. Elektromagnit to'lqinlar
+        {
+            mavzu: "Elektromagnit to'lqinlar",
+            savol: "Fazoda o'zgaruvchan elektr va magnit maydonlarining o'zaro bir-birini hosil qilib tarqalish jarayoni kimning tenglamalaridan kelib chiqqan?",
+            javoblar: [
+                "Maksvell",
+                "Nyuton",
+                "Faradey",
+                "Bor"
+            ],
+            togriJavob: 0,
+            ishora: "Bu olim yorug'lik ham aslida elektromagnit to'lqin ekanligini nazariy jihatdan isbotlagan."
+        },
+
+        // 8. Yorug'lik nurlari
+        {
+            mavzu: "Yorug'lik nurlari",
+            savol: "Rezerford tajribasida rasm tekisligiga perpendikulyar yo'nalgan magnit maydondan o'tkazilgan radioaktiv nur qaysi qismlarga ajralgan?",
+            javoblar: [
+                "Alfa, beta va gamma nurlarga",
+                "Faqat alfa nurlarga",
+                "Rentgen va infraqizil nurlarga",
+                "Elektronlar va pozitronlarga"
+            ],
+            togriJavob: 0,
+            ishora: "Magnit maydon ta'sirida musbat, manfiy va zaryadsiz oqimlar turli tomonga og'adi."
+        },
+        {
+            mavzu: "Yorug'lik nurlari",
+            savol: "Yorug'lik tezligi havosiz fazoda (bo'shliqda) qanchaga teng?",
+            javoblar: [
+                "300 000 km/s",
+                "150 000 km/s",
+                "340 m/s",
+                "3 000 km/s"
+            ],
+            togriJavob: 0,
+            ishora: "Bu tabiatdagi eng katta tezlik bo'lib, muhit zichlashgani sari (masalan, suvda) bu tezlik kamayadi."
+        },
+
+        // 9. Yorug'lik difraksiyasi
+        {
+            mavzu: "Yorug'lik difraksiyasi",
+            savol: "Yorug'lik nurlarining shaffof bo'lmagan to'siqlardan egilib o'tib, geometrik soya sohasiga kirib borish hodisasi nima deb ataladi?",
+            javoblar: [
+                "Difraksiya",
+                "Dispersiya",
+                "Interferensiya",
+                "Qutblanish"
+            ],
+            togriJavob: 0,
+            ishora: "Bu atama lotincha so'zdan olingan bo'lib, bevosita 'egilib o'tish' degan ma'noni anglatadi."
+        },
+        {
+            mavzu: "Yorug'lik difraksiyasi",
+            savol: "Gyuygens prinsipiga asosan, to'lqin fronti yetib borgan har bir nuqta qanday xususiyatga ega bo'ladi?",
+            javoblar: [
+                "U ikkilamchi sferik to'lqinlarning yangi manbayiga aylanadi",
+                "U yorug'lik nurlarini yutib, issiqlik ajratadi",
+                "U yorug'lik tezligini cheksizlikkacha oshiradi",
+                "U nurlarni faqatgina to'g'ri chiziq bo'ylab yo'naltiradi"
+            ],
+            togriJavob: 0,
+            ishora: "Yorug'likning to'siqni aylanib o'tishini tushuntiruvchi ushbu qoidaga ko'ra, har bir yetib borgan nuqta o'zidan yangi to'lqinlar tarqatadi."
+        }
+    ];
+
+    let joriySavollarListi = [];
+    let joriyIndeks = 0;
+    let togriJavoblarSoni = 0;
+
+    function testniBoshlash() {
+        const ism = document.getElementById("foydalanuvchi-ismi").value;
+        if (!ism) {
+            alert("Iltimos, ismingizni kiriting!");
+            return;
+        }
+
+        const rejim = document.getElementById("test-rejimi").value;
+        
+        // Savollarni aralashtirish
+        if (rejim === "aralash") {
+            joriySavollarListi = [...barchaSavollar].sort(() => Math.random() - 0.5);
+        } else {
+            joriySavollarListi = barchaSavollar.filter(s => s.mavzu === rejim).sort(() => Math.random() - 0.5);
+        }
+
+        if (joriySavollarListi.length === 0) {
+            alert("Bu mavzuda hozircha savollar yo'q.");
+            return;
+        }
+
+        document.getElementById("kirish-oynasi").classList.add("yashirin");
+        document.getElementById("test-oynasi").classList.remove("yashirin");
+        
+        document.getElementById("salomlashish").innerText = "Omad, " + ism + "!";
+        document.getElementById("jami-savollar").innerText = joriySavollarListi.length;
+        
+        savolniKorsatish();
+    }
+
+    function savolniKorsatish() {
+        document.getElementById("javoblar-qismi").innerHTML = "";
+        document.getElementById("ishora-matni").classList.add("yashirin");
+        document.getElementById("keyingi-tugmasi").classList.add("yashirin");
+        document.getElementById("ishora-tugmasi").classList.remove("yashirin");
+
+        const savolObyekti = joriySavollarListi[joriyIndeks];
+        
+        document.getElementById("joriy-savol-raqami").innerText = joriyIndeks + 1;
+        document.getElementById("mavzu-nomi").innerText = "Mavzu: " + savolObyekti.mavzu;
+        document.getElementById("savol-matni").innerText = savolObyekti.savol;
+        document.getElementById("ishora-matni").innerText = savolObyekti.ishora;
+
+        const aralashJavoblar = savolObyekti.javoblar.map((javob, raqam) => ({ javob, raqam }))
+                                                    .sort(() => Math.random() - 0.5);
+
+        aralashJavoblar.forEach(ob => {
+            const div = document.createElement("div");
+            div.className = "javob-varianti";
+            div.innerText = ob.javob;
+            // Xatolikni oldini olish uchun javobning tartib raqamini HTML ichiga yashirib qo'yamiz
+            div.dataset.aslRaqam = ob.raqam; 
+            div.onclick = () => javobniTekshirish(ob.raqam, div);
+            document.getElementById("javoblar-qismi").appendChild(div);
+        });
+    }
+
+    function ishoraniKorsatish() {
+        document.getElementById("ishora-matni").classList.remove("yashirin");
+        document.getElementById("ishora-tugmasi").classList.add("yashirin");
+    }
+
+    function javobniTekshirish(tanlanganRaqam, element) {
+        const savolObyekti = joriySavollarListi[joriyIndeks];
+        const barchaVariantlar = document.getElementById("javoblar-qismi").children;
+        
+        // Barcha tugmalarni muzlatish (qayta bosilmasligi uchun)
+        for (let i = 0; i < barchaVariantlar.length; i++) {
+            barchaVariantlar[i].onclick = null;
+            barchaVariantlar[i].style.cursor = "default";
+        }
+
+        // Matnni emas, xotiradagi raqamni solishtiramiz
+        if (tanlanganRaqam === savolObyekti.togriJavob) {
+            element.style.backgroundColor = "#d4edda";
+            element.style.color = "#155724";
+            togriJavoblarSoni++;
+        } else {
+            element.style.backgroundColor = "#f8d7da";
+            element.style.color = "#721c24";
+            
+            // Xato javob belgilanganda, to'g'risini izlash
+            for (let i = 0; i < barchaVariantlar.length; i++) {
+                // Ekranga chiqqan matnni emas, yashirilgan raqamni tekshirish
+                if (parseInt(barchaVariantlar[i].dataset.aslRaqam) === savolObyekti.togriJavob) {
+                    barchaVariantlar[i].style.backgroundColor = "#d4edda";
+                }
+            }
+        }
+
+        document.getElementById("keyingi-tugmasi").classList.remove("yashirin");
+        document.getElementById("ishora-tugmasi").classList.add("yashirin");
+    }
+
+    function keyingiSavol() {
+        joriyIndeks++;
+        if (joriyIndeks < joriySavollarListi.length) {
+            savolniKorsatish();
+        } else {
+            testniYakunlash();
+        }
+    }
+
+    function testniYakunlash() {
+        document.getElementById("test-oynasi").classList.add("yashirin");
+        document.getElementById("natija-oynasi").classList.remove("yashirin");
+        
+        const foyiz = Math.round((togriJavoblarSoni / joriySavollarListi.length) * 100);
+        const ism = document.getElementById("foydalanuvchi-ismi").value;
+        
+        document.getElementById("yakuniy-natija").innerHTML = 
+            ism + ", sizning natijangiz:<br><br>" + 
+            "Jami savollar: " + joriySavollarListi.length + "<br>" +
+            "To'g'ri javoblar: " + togriJavoblarSoni + "<br>" +
+            "Ko'rsatkich: " + foyiz + "%";
+    }
+</script>
+
+</body>
+</html>
